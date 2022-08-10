@@ -21,7 +21,14 @@ router.get('/movie', function (req, res) {
     res.send(movie)
 })
 
+router.get('/test-you-1', function (req, res) {
+           let arr =[ 12,"saifsheikh"]
+           let ele =req.body.element
+           arr.push(ele)
 
+           res.send({ msg:arr, status :true})
+})
+ //solution 1 movies
 
 router.get('/movies/:indexNumber', function (req, res) {
     let movie = ['Rang de basanti', 'The shining', 'Lord of the rings', 'Batman begins']
@@ -34,7 +41,7 @@ router.get('/movies/:indexNumber', function (req, res) {
     res.send(result)
 })
 
-
+//solution 2 films
 
 router.get('/film', function (req, res) {
     let arr = [
@@ -58,6 +65,7 @@ router.get('/film', function (req, res) {
     res.send(arr)
 })
 
+//solution 3 filmid
 
 
 router.get('/films/:filmId', function (req, res) {
@@ -79,7 +87,7 @@ router.get('/films/:filmId', function (req, res) {
             'name': 'Finding Nemo'
         }
     ]
-    let filmId = req.params.filmId
+    let filmId = req.params.filmName
 
     for (i = 0; i < filmName.length; i++) {
         let film = filmName[i]
@@ -94,5 +102,10 @@ router.get('/films/:filmId', function (req, res) {
 router.get('/give-me-students-data', function (req, res) {
 
 })
+
+
+
+
+
 module.exports = router;
 // adding this comment for no reason
