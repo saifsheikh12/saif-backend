@@ -14,11 +14,6 @@ router.get('/test-you', function (req, res) {
     res.send('This is the second routes implementation')
 })
 
-
-
-router.get('/movie', function (req, res) {
-    let movie = ['Rang de basanti', 'The shining', 'Lord of the rings', 'Batman begins']
-    res.send(movie)
 })
 
 router.get('/test-you-1', function (req, res) {
@@ -28,7 +23,16 @@ router.get('/test-you-1', function (req, res) {
 
            res.send({ msg:arr, status :true})
 })
- //solution 1 movies
+
+//solution 1
+
+router.get('/movie', function (req, res) {
+    let movie = ['Rang de basanti', 'The shining', 'Lord of the rings', 'Batman begins']
+    res.send(movie)
+})
+
+
+ //solution 2 movies
 
 router.get('/movies/:indexNumber', function (req, res) {
     let movie = ['Rang de basanti', 'The shining', 'Lord of the rings', 'Batman begins']
@@ -41,7 +45,7 @@ router.get('/movies/:indexNumber', function (req, res) {
     res.send(result)
 })
 
-//solution 2 films
+//solution 3 films
 
 router.get('/film', function (req, res) {
     let arr = [
@@ -65,7 +69,7 @@ router.get('/film', function (req, res) {
     res.send(arr)
 })
 
-//solution 3 filmid
+//solution 4 filmid
 
 
 router.get('/films/:filmId', function (req, res) {
