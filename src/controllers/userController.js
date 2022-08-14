@@ -1,4 +1,4 @@
-const UserModel= require("../models/userModel")
+const UserModel= require("../books/userBooks")
 
 const createUser= async function (req, res) {
     let data= req.body
