@@ -17,28 +17,28 @@ const authors = async function (req, res) {
 
 
 const listBook = async function (req, res) {
-    let findAuthor = await authorModel.find({ author_name: "Chetan Bhagat" })
-    let findBook = await bookModel.find({ $eq :findAuthor[0].author_Id })
+    let author = await authorModel.find({ author_name: "Chetan Bhagat" })
+    let findBook = await bookModel.find({ author_id: {$eq: author[0].author_id}})
     res.send({ msg: findBook })
 }
 
 
 const updateBook = async function (req, res) {
-    let bookPrice = await bookModel.findOneAndUpdate(
-        { bookName: "Two states" },
-        { $set: { prices: "100" } },
+    let bookprice = await bookModel.findOneAndUpdate(
+        {name: "Two states" },
+     { price: 100 },
         { new: true })
-    let updatePrice = bookPrice.prices
-    let authorDetails = await authorModel.find({ author_id: bookPrice }).select({ author_name: 1, _id: 0 })
-    res.send({ msg: authorDetails, updatePrice })
+    let updateprice = bookprice.price
+    let authorupdate = await authorModel.find({ author_id:{$eq: bookprice.author_id}}).select({ author_name: 1, _id: 0 })
+    res.send({ msg: authorupdate, updateprice })
 }
 
 
 const bookRange = async function (req, res) {
     let range = await bookModel.find({ prices: { $gte: 50, $lte: 100 } })
-    let map = range.map(x => x.author_id)
-    let result = await authorModel.find({ author_id: map }).select({ author_name: 1, _id: 0 })
-    res.send({ msg: result })
+    let map = range.map(x => x.author_id);
+    let NewBooks = await authorModel.find({ author_id: map }).select({ author_name: 1, _id: 0 })
+    res.send({ msg: NewBooks })
 
 }
 

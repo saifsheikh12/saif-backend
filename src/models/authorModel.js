@@ -14,4 +14,4 @@ const authorSchema = new mongoose.Schema({
 }, {timestamps : true} );
 
 
-module.exports = mongoose.model('authors', authorSchema)
+module.exports = mongoose.model('authorList', authorSchema)
