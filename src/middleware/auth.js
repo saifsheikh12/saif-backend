@@ -1,3 +1,6 @@
+const userModel=require("../models/userModel")
+const jwt=require("jsonwebtoken")
+
 const authenticate = function(req, req, next) {
     //check the token in request header
     //validate this token
