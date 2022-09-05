@@ -1,6 +1,7 @@
 const blogModel = require("../models/blogModel");
 const authorModel = require("../models/authorModel");
 const moment = require("moment");
+const { findOneAndUpdate } = require("../models/authorModel");
 const today = moment();
 
 const createBlog = async function (req, res) {
@@ -40,6 +41,19 @@ const getBlogs = async function (req, res) {
 
 
 
+// =========================================================================================================================================
+const updateBlogs = async function (req, res) {
+    let blogId = req.params.blogId;
+    if (!blogId) return res.status(400).send({ status: false, msg: "BlogId is a Mandatory Field" })
+    let blog = await blogModel.find({ _id: blogId, isDeleted: false });
+    if (blog.length<1) return res.status(404).send({ status: false, msg: "No Blog Found,Please Confirm Id,or the Blog is deleted!!" });
+    let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId }, { title: req.body.title, body: req.body.body, $push: { tags: req.body.tags, subcategory: req.body.subcategory } }, { new: true });
+    res.send({ data: updatedBlog })
+
+}
+
+
 
 module.exports.createBlog = createBlog;
 module.exports.getBlogs = getBlogs;
+module.exports.updateBlogs = updateBlogs
