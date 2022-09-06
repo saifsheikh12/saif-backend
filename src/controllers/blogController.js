@@ -29,10 +29,12 @@ const createBlog = async function (req, res) {
 const getBlogs = async function (req, res) {
     try {
         let data = req.query;
-        data.isDeleted = false;
-        data.isPublished = true;
+         data.isDeleted = false;
+         data.isPublished = true;
+       
         
-        let blog = await blogModel.find({$or:[data,{tags:{$in:[data.tags]}},{subcategory:{$in:[data.subcategory]}}]});
+        
+        let blog = await blogModel.find(data);
         if (blog.length < 1) return res.status(404).send({ status: false, msg: "No Blogs Found Matching these Criteria" });
         return res.status(200).send({ status: true, data: blog })
     }
