@@ -6,10 +6,10 @@ const blogController = require("../controllers/blogController");
 const middleware = require("../middlewares/mid1");
 
 
-
+// ==========================================================APIS=======================================================================================
 router.post("/authors", authorController.createAuthor);
 router.post("/blogs", middleware.authenticationMidd, middleware.authorisationMidd, blogController.createBlog);
-router.get("/blogs", middleware.authenticationMidd, middleware.authorisationMidd, blogController.getBlogs);
+router.get("/blogs", middleware.authenticationMidd, blogController.getBlogs);
 router.put("/blogs/:blogId", middleware.mid1, middleware.authenticationMidd, middleware.authorisationMidd, blogController.updateBlogs);
 router.delete("/blogs/:blogId", middleware.mid1, middleware.authenticationMidd, middleware.authorisationMidd, blogController.deleteBlogByParams);
 router.delete("/blogs", middleware.authenticationMidd, middleware.authorisationMidd, blogController.deleteByQuery);

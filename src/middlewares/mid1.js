@@ -41,10 +41,10 @@ const authenticationMidd = function (req, res, next) {
 const authorisationMidd = async function (req, res, next) {
     try {
         let token = req["x-api-key"];
-        if (req.body.authorId) { if (req.body.authorId !== token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
-        if (req.params.authorId) { if (req.params.authorId !== token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
-        if (req.params.blogId) { let blog = await blogModel.findById(req.params.blogId).select({ authorId: 1 }); if (blog.authorId !== token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
-        if (req.query.authorId) { if (req.query.authorId !== token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
+        if (req.body.authorId) { if (req.body.authorId != token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
+        if (req.params.authorId) { if (req.params.authorId != token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
+        if (req.params.blogId) { let blog = await blogModel.findById(req.params.blogId).select({ authorId: 1 }); if (blog.authorId != token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
+        if (req.query.authorId) { if (req.query.authorId != token.authorid) return res.status(401).send({ status: false, msg: "UnAuthorised" }); next() };
 
     }
     catch (error) {

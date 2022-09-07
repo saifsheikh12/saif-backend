@@ -2,13 +2,38 @@ const authorModel = require("../models/authorModel");
 const validator = require("email-validator");
 const jwt = require("jsonwebtoken")
 
+
+// ===========================================================REGEX VALIDATION FUNCTION FOR VALIDATING FIRSTNAME AND LASTNAME==================================================================
+function validateName($name) {
+    var nameReg = /^[A-Za-z]*$/;
+    if (!nameReg.test($name)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+
+
+
+
+
+// ==========================================================API FOR CREATING AUTHOR=========================================================================================
+
 const createAuthor = async function (req, res) {
     try {
         let authorData = req.body;
+
         if (!authorData.fname) return res.status(400).send({ status: false, msg: "FirstName Is Mandatory" });
-        if (typeof (authorData.fname) !== "string") return res.status(400).send({ status: false, msg: "Invalid First Name" });
+        let fname = validateName(authorData.fname);
+        if (!fname) return res.status(400).send({ status: false, msg: "Invalid First Name" });
+
+
         if (!authorData.lname) return res.status(400).send({ status: false, msg: "LastName Is Mandatory" });
-        if (typeof (authorData.lname) !== "string") return res.status(400).send({ status: false, msg: "Invalid Last Name" });
+        let lname = validateName(authorData.lname);
+        if (!lname) return res.status(400).send({ status: false, msg: "Invalid Last Name" });
+
+
         if (!authorData.title) return res.status(400).send({ status: false, msg: "Title Is A Mandatory Field" });
         if (authorData.title !== "Mr" && authorData.title !== "Miss" && authorData.title !== "Mrs") return res.status(400).send({ status: false, msg: "Unacceptable Title" })
         let validEmail = validator.validate(authorData.email);
@@ -21,6 +46,11 @@ const createAuthor = async function (req, res) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
+
+
+
+
+// ======================================================API FOR AUTHOR LOGIN=======================================================================================
 
 const login = async function (req, res) {
     let email = req.body.email;
