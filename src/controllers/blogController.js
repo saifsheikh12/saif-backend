@@ -100,7 +100,7 @@ const deleteByQuery = async function (req, res) {
     try {
 
         let reqQuery = req.query;
-        if (Object.keys(reqQuery).length < 1) return res.status(400).send({ status: false, msg: "Please Provide Query Params Filter" });
+        if (Object.keys(reqQuery).length == 0) return res.status(400).send({ status: false, msg: "Please Provide Query Params Filter" });
         reqQuery.isDeleted = false;
         if (reqQuery.authorId === "" || reqQuery.category === "" || reqQuery.tags === "" || reqQuery.subcategory === "" || reqQuery.isPublished === "") return res.status(400).send({ status: false, msg: "Query Filters Cant Be Blank" })
         let deletedBlog = await blogModel.updateMany(reqQuery, { isDeleted: true }, { new: true });
