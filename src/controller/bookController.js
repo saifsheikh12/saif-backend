@@ -1,5 +1,7 @@
 const bookModel = require("../model/bookModel")
 const userModel=require("../model/userModel")
+const moment = require('moment');
+const today = moment();
 //-------------------------------------------common isvalid Function--------------------------//
 const isValid = function(value){
     if(typeof value ==="undefined" || value === null) return false
@@ -64,9 +66,16 @@ const createBook=async function(req,res){
     }
 
     //checking releaseAt validation
+    
+
     if(!isValid(releasedAt)){
        return  res.status(400).send({status:false, message: "releaseAt is required and should not unvalid"})
+
     }
+    if (!today.format('YYYY-MM-DD')){
+        console.log(today)
+        return res.status(400).send({ status: false, message: "Released date is not valid it should be YYYY-MM-DD" })}
+
     
 
     let data = await bookModel.create(bookData) 
@@ -82,21 +91,26 @@ catch (error) {
 const getBooks = async function (req, res) {
     try {
 
-        let obj = { isDeleted: false }
-        let { userId, category, subcategory } = req.query
+       let data= req.query;
+       data.isDeleted= false;
 
-        if (userId) { obj.userId = userId }
-        if (category) { obj.category = category }
-        if (subcategory) { obj.subcategory = { $in: [subcategory] } }
+        let { userId, category, subcategory } = data
+
+        if (userId) { data.userId = userId }
+         if (category) { data.category = category }
+         if (subcategory) { data.subcategory = { $in: [subcategory] } }
 
 
-        let savedData = await bookModel.findOne(obj)
-        if (savedData.length == 0) {
-            return res.status(404).send({ status: false, msg: "no document found" })
-        }
-        let specificData = await bookModel.find({ _id: savedData._id, isDeleted: false }).select({
-            _id: 1, title: 1, excerpt: 1,userId: 1, category: 1, releasedAt: 1, reviews: 1}).sort((a,b)=>a-b)
-        return res.status(200).send({ status: true, message: 'Books list', data: specificData })
+        let savedData = await bookModel.find(data)
+   if (savedData.length == 0) {
+            return res.status(404).send({ status: false, msg: "no document found" })}
+    return res.status(200).send({ status: true, data:savedData });
+               
+            
+
+    //      let specificData = await bookModel.find({ _id: savedData._id, isDeleted: false }).select({
+    //         _id: 1, title: 1, excerpt: 1,userId: 1, category: 1, releasedAt: 1, reviews: 1})/*.sort((a,b)=>a-b)*/
+    //      return res.status(200).send({ status: true, message: 'Books list', data: specificData })
     }
     catch (err) {
         res.status(500).send({ status: false, msg: err.message })
