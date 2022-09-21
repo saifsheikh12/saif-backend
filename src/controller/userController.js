@@ -1,5 +1,5 @@
 const userModel=require("../model/userModel")
-
+const jwt = require("jsonwebtoken");
 
 
    const createUser = async function (req, res) {
@@ -68,12 +68,12 @@ const login = async function (req, res) {
         if (!password) return res.status(400).send({ status: false, msg: "Please Input Password" });
         let userData = await userModel.findOne({ email: email, password: password });
         if (!userData) return res.status(400).send({ status: false, msg: "No User Found With These Credentials" });
-        let token = jwt.sign({ userid: userData._id, email: userData.email }, "Project-3");
-
-        return res.status(200).send({ status: true, data: { token: token } })
+        let token = jwt.sign({ userid: userData._id, email: userData.email }, "Project-3",{ expiresIn: '24h' });
+        res.setHeader("x-api-key", token);
+        return res.status(200).send({ status: true,message:" loggedIn Successfully",data: { token: token } })
     }
     catch (error) {
-        return res.status(500).send({ status: false,message:"Author loggedIn Successfully", message: error.message })
+        return res.status(500).send({ status: false, message: error.message })
     }
 }
 

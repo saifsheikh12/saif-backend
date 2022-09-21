@@ -44,8 +44,10 @@ const userSchema=new mongoose.Schema({
         type:String,
         trim:true
     }
-  },
+  }
   
-},{timestamp:true});
+},
+{ timestamps: true })
+;
 
 module.exports=mongoose.model("user",userSchema)
