@@ -10,10 +10,12 @@ const userModel=require("../model/userModel")
         const mobileRegex = /^([6-9]\d{9})$/
         const passwordRegex = /^(?!.\s)[A-Za-z\d@$#!%?&]{8,15}$/
         const pincodeRegex = /^[1-9][0-9]{6}$/
-
-        let { title, name, email, phone, password, address } = req.body  // Destructuring
-
-        if (!keyValue(req.body)) return res.status(400).send({ status: false, msg: "Please Provide Details" })
+       let data= req.body
+        let { title, name, email, phone, password, address } = data  // Destructuring
+        if (Object.keys(data).length === 0)
+        {
+            return res.status(400).send({ status: false, message: "Please give some data" });
+        }
 
         if (!title) return res.status(400).send({ status: false, msg: "Please Provide Title" })
         let titles = ["Mr", "Mrs", "Miss"]
@@ -76,5 +78,4 @@ const login = async function (req, res) {
 }
 
 
-module.exports.login=login
-module.exports.createUser=createUser
+module.exports={createUser,login}
