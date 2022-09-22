@@ -51,7 +51,7 @@ const isValid = function (value) {
         if (!password.match(passwordRegex)) return res.status(400).send({ status: false, msg: "Please Provide Valid password ,password must be 8 digit to 15 digit" })
 
 
-       {             // Nested If used here
+        if (address) {              // Nested If used here
             if (!isValid(address)) return res.status(400).send({ status: false, msg: "Please enter your address!" })
             if (address.pincode.match(pincodeRegex)) return res.status(400).send({ status: false, msg: "Please Provide Valid Pincode" })
         }
@@ -78,9 +78,8 @@ const login = async function (req, res) {
 
         //===========================================  token creation ==============================================================//
         let token = jwt.sign({ userId: userData._id, email: userData.email , 
-             iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 10 * 60 * 60
-    }, "Project-3" );
+             iat: Math.floor(Date.now() / 1000)
+     }, "Project-3" ,{ expiresIn: "1h" } );
         res.setHeader("x-api-key", token);
         return res.status(200).send({ status: true,message:" loggedIn Successfully",data: { token: token } })
     }
@@ -88,6 +87,23 @@ const login = async function (req, res) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
+// let token = await jwt.sign(
+//     {
+//       userId: gettingDetails._id,
+//       Batch: "Plutonium",
+//       Project: "Group32",
+//     },
+//     "secret-key-Group32",{ expiresIn: "1h" }
+//   );
+//   res.header("x-api-key", token);
+// decodedToken = jwt.verify( token,"secret-key-Group32", function (err, decodedToken) {
+//     if (err) {
+//       return res.status(401).send({ status: false, message: "token is invalid" });
+//       }
+//     if (Date.now() > decodedToken.exp * 1000) {
+//       return res.status(401).send({ status: false, message: "Token expired" }); //checking if the token is expired
+//       }
+//       req["decodedToken"] = decodedToken.userId;
 
 
 module.exports={createUser,login}

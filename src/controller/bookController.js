@@ -91,30 +91,77 @@ catch (error) {
 const getBooks = async function (req, res) {
     try {
 
-       let data= req.query;
-       data.isDeleted= false;
+    //  let data= req.query;
+      // data.isDeleted= false;
 
-        let { userId, category, subcategory } = data
+//         let { userId, category, subcategory } = data
 
-        if (userId) { data.userId = userId }
-         if (category) { data.category = category }
-         if (subcategory) { data.subcategory = { $in: [subcategory] } }
+//         if (userId) { data.userId = userId }
+//          if (category) { data.category = category }
+//          if (subcategory) { data.subcategory = { $in: [subcategory] } }
 
 
-        let savedData = await bookModel.find(data)
-   if (savedData.length == 0) {
-            return res.status(404).send({ status: false, msg: "no document found" })}
-    return res.status(200).send({ status: true, data:savedData });
+//         let savedData = await bookModel.find(data)
+//    if (savedData.length == 0) {
+//             return res.status(404).send({ status: false, msg: "no document found" })}
+//     return res.status(200).send({ status: true, data:savedData });
                
             
 
     //      let specificData = await bookModel.find({ _id: savedData._id, isDeleted: false }).select({
     //         _id: 1, title: 1, excerpt: 1,userId: 1, category: 1, releasedAt: 1, reviews: 1})/*.sort((a,b)=>a-b)*/
     //      return res.status(200).send({ status: true, message: 'Books list', data: specificData })
+    
+
+        if (Object.keys(req.query).length < 1) {
+            const findBooks = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title: 1 })
+            res.status(200).send({ status: true, message: "Success", data: findBooks })
+        } else {
+            const { userId, category, subcategory } = req.query
+    
+            let filterBooks = await bookModel.find({
+                $and: [
+                    {
+                        $and: [{ isDeleted: false }],
+                        $or: [{
+                            $or: [
+                                { "userId": { $in: userId } },
+                                { "category": { $in: category } },
+                                { "subcategory": { $in: [subcategory] } }
+                            ]
+                        }]
+                    },
+                ]
+            }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title: 1 })
+            res.status(200).send({ status: true, message: "Success", data: filterBooks })
+    
+        }
+    
+    
     }
     catch (err) {
         res.status(500).send({ status: false, msg: err.message })
     }
 }
+//-------------------------------------------upadtion api --------------------------//
+const updateBooks= async function(req,res){
 
-module.exports={createBook,getBooks}
+try{
+    const bookId =req.params.bookId
+    const booksUpdates= req.body
+    const{title,excerpt,releaseAt,ISBN}=booksUpdates
+    let books = await bookModel.findOneAndUpdate({_id:bookId ,isDeleted:false},
+        {$set:{title:title,excerpt:excerpt,releaseAt:releaseAt,ISBN:ISBN}}
+        ,{new:true}
+        );
+        if (!bookId) {
+            return res.status(404).send({ status: false, msg: "bookId  not found" });
+          }
+          return res.status(200).send({ status: true, msg :"updated successfully",data:books });
+}
+catch (error) {
+    res.status(500).send({ status: false, Error: error.message });
+  }
+};
+
+module.exports={createBook,getBooks,updateBooks}

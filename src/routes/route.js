@@ -8,6 +8,7 @@ router.post("/register",userController.createUser)
 router.post("/login",userController.login)
 router.post("/books",middleware.authentication,middleware.authorization ,bookController.createBook)
 router.get("/books",middleware.authentication,middleware.authorization,bookController.getBooks)
+router.put("/books/:bookId",bookController.updateBooks)
 
 router.all("/*/",async function(req, res){
     res.status(404).send({status:false, msg: "page not found"})
