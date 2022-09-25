@@ -116,44 +116,42 @@ const createUser = async function (req, res) {
 
 
 
-const login = async function (req, res) {
-    try {
-        let email = req.body.email;
-        let password = req.body.password;
-        if (!email) return res.status(400).send({ status: false, msg: "Please Input Email" });
-        if (!password) return res.status(400).send({ status: false, msg: "Please Input Password" });
-        let userData = await userModel.findOne({ email: email, password: password });
-        if (!userData) return res.status(400).send({ status: false, msg: "No User Found With These Credentials" });
-
-        //===========================================  token creation ==============================================================//
-        let token = jwt.sign({
-            userId: userData._id, email: userData.email,
-            iat: Math.floor(Date.now() / 1000)
-        }, "Project-3", { expiresIn: "1h" });
-        res.setHeader("x-api-key", token);
-        return res.status(200).send({ status: true, message: " loggedIn Successfully", data: { token: token } })
+let loginUser = async function (req, res) {
+    let loginData = req.body;
+    if (isValidBody(loginData)) {
+        return res.status(400).send({ status: false, message: "body cant be empty" })
     }
-    catch (error) {
-        return res.status(500).send({ status: false, message: error.message })
+    let { email, password } = loginData;
+  
+    if (!isValid(email)) {
+        return res.status(400).send({ status: false, message: "Please Provide Email" })
     }
-}
-// let token = await jwt.sign(
-//     {
-//       userId: gettingDetails._id,
-//       Batch: "Plutonium",
-//       Project: "Group32",
-//     },
-//     "secret-key-Group32",{ expiresIn: "1h" }
-//   );
-//   res.header("x-api-key", token);
-// decodedToken = jwt.verify( token,"secret-key-Group32", function (err, decodedToken) {
-//     if (err) {
-//       return res.status(401).send({ status: false, message: "token is invalid" });
-//       }
-//     if (Date.now() > decodedToken.exp * 1000) {
-//       return res.status(401).send({ status: false, message: "Token expired" }); //checking if the token is expired
-//       }
-//       req["decodedToken"] = decodedToken.userId;
+   
+    if (!isValid(password)) {
+        return res.status(400).send({ status: false, message: "Please Provide password" })
+    }
+  
+    let userData = await userModel.findOne({ email: email, password: password });
+    if (!userData) {
+        return res.status(400).send({ status: false, message: "password or emaild are invalid" });
+    }
+  
+    let date = Date.now();
+    // let createTime = Math.floor(date / 1000);
+    // let expTime = createTime + 120;
+    let createTime= Math.floor(Date.now() / 1000);
+    let expTime = createTime + (60 * 60)
 
+  
+    let token = jwt.sign(
+      {
+        userId: userData._id.toString(),
+        iat: createTime,
+        exp: expTime,
+      },
+      "rahul_satyajit_mdsaifuddin_anul"
+    );
+    res.status(201).send({ status: true, message: "success" , data: token });
+  };
 
-module.exports = { createUser, login }
+module.exports = { createUser, loginUser }

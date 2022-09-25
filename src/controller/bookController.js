@@ -50,9 +50,9 @@ const createBook = async function (req, res) {
         }
         //checking isbn validation
         if (!isValid(ISBN)) {
-            return res.status(400).send({ status: false, message: "ISBN is not valid" })
+            return res.status(400).send({ status: false, message: "ISBN is required" })
         }
-        if (ISBN.trim().length !== 13 || !Number(ISBN)) {
+        if (ISBN.trim().length !== 13) {
             return res.status(400).send({ status: false, message: "ISBN must contain only numerics and should have 13 digits" })
         }
         const doc1 = await bookModel.findOne({ ISBN: bookData.ISBN })
@@ -62,12 +62,12 @@ const createBook = async function (req, res) {
         //checking category validation
 
         if (!isValid(category)) {
-            return res.status(400).send({ status: false, message: "category is not valid" })
+            return res.status(400).send({ status: false, message: "category is mandatory" })
         }
 
         //checking subcategory validation
         if (!isValid(subcategory)) {
-            return res.status(400).send({ status: false, message: "subcategory is not valid" })
+            return res.status(400).send({ status: false, message: "subcategory is mandatory" })
         }
         //checking reviews validation
 
@@ -79,7 +79,7 @@ const createBook = async function (req, res) {
 
 
         if (!isValid(releasedAt)) {
-            return res.status(400).send({ status: false, message: "releaseAt is required and should not unvalid" })
+            return res.status(400).send({ status: false, message: "releaseAt is mandatory" })
 
         }
 
