@@ -146,7 +146,7 @@ const getBooksByQuery = async function (req, res) {
         }
     }
     catch (err) {
-        res.status(500).send({ status: false, message: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 //-------------------------------------------get Book By BookId-----------------------//
@@ -154,7 +154,7 @@ const getBooksByQuery = async function (req, res) {
 const getBookById = async function (req, res) {
     try {
         let bookId = req.params.bookId;
-        
+
         if (!mongoose.isValidObjectId(bookId)) {
             return res.status(400).send({ status: false, message: "You entered a invalid BookId" });
         }
@@ -183,11 +183,9 @@ const getBookById = async function (req, res) {
             reviewsData: findReview
         }
 
-        return res
-            .status(200)
-            .send({ status: true, message: "Book List", data: respondData });
-    } catch (err) {
-        res.status(500).send({ error: err.message });
+        return res.status(200).send({ status: true, message: "Book List", data: respondData });
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message })
     }
 }
 
@@ -235,7 +233,7 @@ const updateBooks = async function (req, res) {
             if (!isValid(ISBN)) {
                 return res.status(400).send({ status: false, message: "ISBN is not valid" })
             }
-            if (ISBN.trim().length !== 13 || !Number(ISBN)) {
+            if (ISBN.trim().length !== 13) {
                 return res.status(400).send({ status: false, message: "ISBN must contain only numerics and should have 13 digits" })
             }
             const doc1 = await bookModel.findOne({ ISBN: ISBN })
@@ -244,6 +242,10 @@ const updateBooks = async function (req, res) {
             }
         }
         // updating
+        let check = await bookModel.findOne({ _id: bookId })
+        if (check.isDeleted == true) {
+            return res.status(400).send({ status: "false", message: "book is already Deleted" })
+        }
         let books = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $set: { title: title, excerpt: excerpt, releasedAt: releasedAt, ISBN: ISBN } }, { new: true });
 
         return res.status(200).send({ status: true, message: "updated successfully", data: books });
@@ -275,7 +277,7 @@ const deleteBook = async function (req, res) {
 
     }
     catch (error) {
-        return res.status(500).send({ status: false, error: error.message });
+        return res.status(500).send({ status: false, message: error.message });
     }
 };
 

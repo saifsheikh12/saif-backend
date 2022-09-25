@@ -44,7 +44,7 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please Provide Name" })
         }
         if (!nameRegex.test(name)) {
-            return res.status(400).send({ status: false, msg: "Please Provide Valid Name" })
+            return res.status(400).send({ status: false, message: "Please Provide Valid Name" })
         }
 
         //checking phone validation
@@ -52,7 +52,7 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please Provide Mobile" })
         }
         if (!phone.match(mobileRegex)) {
-            return res.status(400).send({ status: false, msg: "Please Provide Valid Mobile" })
+            return res.status(400).send({ status: false, message: "Please Provide Valid Mobile" })
         }
 
         let duplicatePhone = await userModel.findOne({ phone })
@@ -105,11 +105,11 @@ const createUser = async function (req, res) {
 
 
         const userCreation = await userModel.create(req.body)
-        res.status(201).send({ status: true, message: 'Success', data: userCreation })
+        return res.status(201).send({ status: true, message: 'Success', data: userCreation })
 
     }
     catch (error) {
-        res.status(500).send({ status: false, message: error.message })
+        return res.status(500).send({ status: false, message: error.message })
     }
 
 }
@@ -122,36 +122,36 @@ let loginUser = async function (req, res) {
         return res.status(400).send({ status: false, message: "body cant be empty" })
     }
     let { email, password } = loginData;
-  
+
     if (!isValid(email)) {
         return res.status(400).send({ status: false, message: "Please Provide Email" })
     }
-   
+
     if (!isValid(password)) {
         return res.status(400).send({ status: false, message: "Please Provide password" })
     }
-  
+
     let userData = await userModel.findOne({ email: email, password: password });
     if (!userData) {
         return res.status(400).send({ status: false, message: "password or emaild are invalid" });
     }
-  
+
     let date = Date.now();
     // let createTime = Math.floor(date / 1000);
     // let expTime = createTime + 120;
-    let createTime= Math.floor(Date.now() / 1000);
+    let createTime = Math.floor(Date.now() / 1000);
     let expTime = createTime + (60 * 60)
 
-  
+
     let token = jwt.sign(
-      {
-        userId: userData._id.toString(),
-        iat: createTime,
-        exp: expTime,
-      },
-      "rahul_satyajit_mdsaifuddin_anul"
+        {
+            userId: userData._id.toString(),
+            iat: createTime,
+            exp: expTime,
+        },
+        "rahul_satyajit_mdsaifuddin_anul"
     );
-    res.status(201).send({ status: true, message: "success" , data: token });
-  };
+    return res.status(201).send({ status: true, message: "success", data: token });
+};
 
 module.exports = { createUser, loginUser }

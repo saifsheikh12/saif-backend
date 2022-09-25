@@ -13,9 +13,9 @@ router.post("/books",middleware.authentication,middleware.authorizationForCreate
 
 router.get("/books",middleware.authentication, bookController.getBooksByQuery)
 
-router.get("/books/:bookId",middleware.authentication,middleware.authorization, bookController.getBookById)
+router.get("/books/:bookId",middleware.authentication,/*middleware.authorization*/ bookController.getBookById)
 
-router.put("/books/:bookId",middleware.authentication,middleware.authorization,bookController.updateBooks)
+router.put("/books/:bookId",middleware.authentication,middleware.authorization, bookController.updateBooks)
 
 router.delete("/books/:bookId",middleware.authentication,middleware.authorization,bookController.deleteBook)
 
@@ -28,7 +28,7 @@ router.put("/books/:bookId/review/:reviewId",reviewController.updateReview)
 router.delete('/books/:bookId/review/:reviewId', reviewController.deleteBookReview);
 
 router.all("/*/",async function(req, res){
-    res.status(400).send({status:false, message: "page not found"})
+    return res.status(400).send({status:false, message: "page not found"})
 })
 
 module.exports= router;
