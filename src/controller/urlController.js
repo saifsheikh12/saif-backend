@@ -4,21 +4,7 @@ const validUrl = require('validator');
 
 const redis = require("redis");
 
-const { promisify } = require("util");
 
-//Connect to redis
-const redisClient = redis.createClient(
-    17535,
-    "redis-17535.c264.ap-south-1-1.ec2.cloud.redislabs.com",
-    { no_ready_check: true }
-);
-redisClient.auth("zOaJpMGeeXAlu1UmZl6AztswtECrzRpI", function (err) {
-    if (err) throw err;
-});
-
-redisClient.on("connect", async function () {
-    console.log("Connected to Redis..");
-});
 
 
 function isValid(value) {  //function to validate string
@@ -29,11 +15,8 @@ function isValid(value) {  //function to validate string
 
 
 
-const SETEX_ASYNC = promisify(redisClient.SETEX).bind(redisClient);
-const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
-
 //===================================================[API:FOR CREATING SHORT URL]===========================================================
-exports.shortnerUrl = async (req, res) => {
+const shortnerUrl = async (req, res) => {
     try {
         let data = req.body;
         //valid data
@@ -46,16 +29,11 @@ exports.shortnerUrl = async (req, res) => {
             return res.status(400).send({ status: false, message: "Please provide long URL" })
         }
 
-        //getting data from cache if present
-        let cacheData = await GET_ASYNC(`${data.longUrl}`)
-        if (cacheData) {
-            return res.status(200).send({ status: true, data: JSON.parse(cacheData) });
-        }
+        
         // checking if same link is stored in db and sending back data
         let longUrl = await urlModel.findOne({ longUrl: data.longUrl }).select({ _id: 0, __v: 0, createdAt: 0, updatedAt: 0 })
         if (longUrl) {
-            //if already exist then setting the document in the cache with expire time
-            await SETEX_ASYNC(`${data.longUrl}`, 3600, JSON.stringify(longUrl))
+            
             return res.status(200).send({ status: true, data: longUrl })
         }
 
@@ -78,8 +56,6 @@ exports.shortnerUrl = async (req, res) => {
         const response = await urlModel.create(data);
 
         const responseData = { longUrl: response.longUrl, shortUrl: response.shortUrl, urlCode: response.urlCode }
-        //finding the same created document and then setting the document in the cache with expire time
-        await SETEX_ASYNC(`${data.longUrl}`, 3600, JSON.stringify(responseData))
         return res.status(201).send({ status: true, data: responseData });
 
     } catch (error) {
@@ -89,7 +65,7 @@ exports.shortnerUrl = async (req, res) => {
 
 //===================================================[API:FOR REDIRECTING TO LONG URL]===========================================================
 
-exports.getUrl = async (req, res) => {
+const getUrl = async (req, res) => {
     try {
         const urlCode = req.params.urlCode
 
@@ -98,24 +74,19 @@ exports.getUrl = async (req, res) => {
             return res.status(400).send({ status: false, message: "URL Code is not valid." });
         }
 
-        //getting data from cache if present
-        let cacheData = await GET_ASYNC(`${urlCode}`);
-
-
-        if (cacheData) {
-            let url = JSON.parse(cacheData)
-            return res.status(302).redirect(url.longUrl);
-        } else {
+     
             const checkUrl = await urlModel.findOne({ urlCode: urlCode })
 
             if (!checkUrl) {
                 return res.status(404).send({ status: false, message: "URL not found." })
             }
-            //if already exist then setting the document in the cache with expire time
-            await SETEX_ASYNC(`${urlCode}`, 3600, JSON.stringify(checkUrl))
-            return res.status(302).redirect(checkUrl.longUrl);
-        }
+         
+        
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message });
     }
 }
+
+
+module.exports.shortnerUrl=shortnerUrl
+module.exports.getUrl=getUrl
