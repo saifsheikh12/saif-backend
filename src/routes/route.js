@@ -4,7 +4,7 @@ const router = express.Router();
 
 const urlController=require("../controller/urlController")
 
-router.post("/shortnerUrl",urlController.shortnerUrl)
+router.post("/shortUrl",urlController.shortUrl)
 router.get("/:urlCode",urlController.getUrl)
 
 
