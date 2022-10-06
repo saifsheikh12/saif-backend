@@ -4,7 +4,8 @@
   "description": "shoortenUrl_Project",
   "main": "index.js",
   "scripts": {
-    "test": "node/index,js"
+    "test": "node/index,js",
+    "start":"nodemon src/index.js"
   },
   "repository": {
     "type": "git",
@@ -27,8 +28,7 @@
     "npm": "^8.19.2",
     "redis": "^3.1.2",
     "shortid": "^2.2.16",
-    "util": "^0.12.4",
-    "valid-data-url": "^4.0.1",
-    "valid-url": "^1.0.9"
+    "util": "^0.12.4"
+    
   }
 }

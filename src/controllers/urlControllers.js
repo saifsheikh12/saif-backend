@@ -21,7 +21,7 @@ const createUrl = async function (req, res) {
     }
     
     let ProfileData = await GET_ASYNC(`${longUrl}`);
-     console.log(ProfileData.keys)
+    //  console.log(ProfileData.keys)
     ProfileData = JSON.parse(ProfileData)
  
     if (ProfileData) {
@@ -45,6 +45,7 @@ const createUrl = async function (req, res) {
     let checkingUrl=await axios(Url)
     .then(()=>longUrl)
     .catch(()=>null)
+
     if (!checkingUrl) {
             
       return res.status(400).send({ status: false, message: `This Link: ${longUrl} is not Valid URL.` }) }
@@ -67,6 +68,7 @@ const createUrl = async function (req, res) {
     shortUrl: savedData.shortUrl,
     urlCode: savedData.urlCode
 }
+// await SET_ASYNC(`${longUrl}`, JSON.stringify(obj))
 
     return res.status(201).send({ status: true, message: "successfully created", data: obj })
 
@@ -75,7 +77,7 @@ const createUrl = async function (req, res) {
     return res.status(500).send({ status: false, message: err.message })
   }
 }
-module.exports.createUrl=createUrl
+
 
 // Get Url
 
@@ -108,5 +110,6 @@ const getUrl = async function (req, res) {
         return res.status(500).send({status:false,message:error.message})
     }
 }
+module.exports.createUrl=createUrl
 
 module.exports.getUrl=getUrl
