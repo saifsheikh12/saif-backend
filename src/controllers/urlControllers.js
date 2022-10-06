@@ -21,7 +21,7 @@ const createUrl = async function (req, res) {
     }
     
     let ProfileData = await GET_ASYNC(`${longUrl}`);
-    //  console.log(ProfileData.keys)
+    
     ProfileData = JSON.parse(ProfileData)
  
     if (ProfileData) {
