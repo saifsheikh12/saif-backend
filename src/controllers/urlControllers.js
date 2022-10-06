@@ -68,7 +68,7 @@ const createUrl = async function (req, res) {
     shortUrl: savedData.shortUrl,
     urlCode: savedData.urlCode
 }
-// await SET_ASYNC(`${longUrl}`, JSON.stringify(obj))
+
 
     return res.status(201).send({ status: true, message: "successfully created", data: obj })
 
