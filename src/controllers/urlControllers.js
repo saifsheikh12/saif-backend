@@ -1,9 +1,9 @@
 const urlModel = require("../models/urlModel");
 const shortid = require('shortid')
-const validUrl = require('valid-url')
-const {SET_ASYNC,GET_ASYNC}=require("./redis")
-const isUrl = require("is-valid-http-url")
 
+const {SET_ASYNC,GET_ASYNC}=require("./redis")
+
+const axios=require("axios")
 
 
 // Create Url
@@ -19,23 +19,43 @@ const createUrl = async function (req, res) {
     if (!longUrl || typeof longUrl != "string" || longUrl.trim().length == 0){
         return res.status(400).send({status:false, message:"LongUrl must be present and Typeof must be String."})
     }
-  
-    if (!validUrl.isUri(longUrl)){
-      return res.status(400).send({status:false, message:"URL  not corect"})
+    
+    let ProfileData = await GET_ASYNC(`${longUrl}`);
+     console.log(ProfileData.keys)
+    ProfileData = JSON.parse(ProfileData)
+ 
+    if (ProfileData) {
+      
+      return res.status(200).send({status:true,data:ProfileData,message:"coming from cache"})
     }
-    if(!isUrl(longUrl)){
-        return res.status(400).send({status:false, message:"URL http || https incorect"})
+     else {
+
+      let data =await urlModel.findOne({longUrl}).select({_id:0,longUrl:1,shortUrl:1,urlCode:1})
+      if(data){
+       await SET_ASYNC(`${longUrl}`, JSON.stringify(data));
+      res.status(200).send({status:true, message: " already exist in collection db",data:data})
+    
+       } else{
+
+    let Url={
+      method:"get",
+      url:longUrl,
     }
-   
-    let data =await urlModel.findOne({longUrl}).select({_id:0,longUrl:1,shortUrl:1,urlCode:1})
-    if(data){
-      return res.status(201).send({status:true, message: " already exist in collection",data:data})
-    }
+
+    let checkingUrl=await axios(Url)
+    .then(()=>longUrl)
+    .catch(()=>null)
+    if (!checkingUrl) {
+            
+      return res.status(400).send({ status: false, message: `This Link: ${longUrl} is not Valid URL.` }) }
+
 
     const str = 'http://localhost:3000/'
     const urlCode = shortid.generate().toLowerCase()
 
     const shortUrl = str + urlCode
+
+    
 
     const savedData = await urlModel.create({longUrl, shortUrl, urlCode})
 
@@ -48,9 +68,9 @@ const createUrl = async function (req, res) {
     urlCode: savedData.urlCode
 }
 
-    return res.status(302).send({ status: true, message: "successfully created", data: obj })
+    return res.status(201).send({ status: true, message: "successfully created", data: obj })
 
-  }
+  }}}
   catch (err) {
     return res.status(500).send({ status: false, message: err.message })
   }
@@ -75,7 +95,7 @@ const getUrl = async function (req, res) {
           
         } else {
             const url = await urlModel.findOne({ urlCode: urlCode });
-            console.log(url)
+            
             if (!url) {
               return res.status(404).send({ message: "No url found" });
             }

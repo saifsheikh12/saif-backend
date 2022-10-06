@@ -1,6 +1,4 @@
 const express=require("express")
-
-//import urlContrller from "../controllers/urlControllers.js"
 const urlController=require("../controllers/urlControllers")
 const router = express.Router(); 
 
@@ -12,3 +10,7 @@ router.all("/*", function (req ,res){
 })
 
 module.exports = router
+
+
+
+ 
