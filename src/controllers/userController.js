@@ -187,7 +187,7 @@ const createUser = async function (req, res) {
 const loginUser = async function (req, res) {
   try {
     let data = req.body;
-    let { email, password } = data;
+    let { email, password,phone } = data;
 
     if (!isValidBody(data))
       return res.status(404).send({
@@ -206,7 +206,7 @@ const loginUser = async function (req, res) {
         .send({ status: false, message: "Email is invalid!" });
     }
 
-    let checkEmail = await userModel.findOne({ email: email });
+    let checkEmail = await userModel.findOne({ email: email ,phone:phone});
     if (!checkEmail) {
       return res
         .status(401)
@@ -364,7 +364,7 @@ const updateProfile = async function (req, res) {
         });
       }
 
-      const salt = await bcrypt.genSalt(30);
+      const salt = await bcrypt.genSalt(10);
       data.password = await bcrypt.hash(data.password, salt);
 
       let encryptPassword = data.password;

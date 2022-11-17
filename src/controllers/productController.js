@@ -31,9 +31,7 @@ let createProduct = async function (req, res) {
     } = data;
 
     if (!isValidBody(data)) {
-      return res
-        .status(400)
-        .send({
+      return res.status(400).send({
           status: false,
           message: "Please provide data in request body",
         });
@@ -358,7 +356,7 @@ const updateProduct = async function (req, res) {
           .status(400)
           .send({ status: false, message: "Style is invalid!" });
       }
-      update["style"] = style;
+      update.style = style;
     }
 
     if (installments) {

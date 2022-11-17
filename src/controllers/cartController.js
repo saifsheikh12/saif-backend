@@ -1,3 +1,5 @@
+
+
 const cartModel = require("../models/cartModel");
 const userModel = require("../models/userModel");
 const productModel = require("../models/productModel");
@@ -249,6 +251,7 @@ const updateCart = async function (req, res) {
 
         if (removeProduct == 0) {
           const productRemove = await cartModel.findOneAndUpdate(
+
             { _id: cartId },
             {
               $pull: { items: { productId: productId } },
