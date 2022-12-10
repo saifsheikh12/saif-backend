@@ -37,7 +37,11 @@ otherwise, it will create a new student record.
 
 # Note :
 ● UI must be responsive.
+
 ● Edit form must be in the popup window.
+
 ● Perform edit and delete option through token-based API.
+
 ● Use encryption
+
 ● Error handling with logs
