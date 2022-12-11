@@ -13,6 +13,10 @@ app.use(express.json())
 
 app.use('/', route)
 
+route.all('/*', function(req, res){
+    res.status(400).send({status: false, message: 'Url Wrong'})
+})
+
 app.listen( 3000, function(){
-    console.log('Express app running on PORT ' + (3000))
+    console.log('Express app running on PORT ' + 3000)
 })
