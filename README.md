@@ -26,18 +26,19 @@ otherwise, it will create a new student record.
 
     
     { 
+           
            Name   Subject   Marks
     
            Jhon    Maths     75
     }
-    
+
 
 * If we add the same data again
 
     
     {
+           
            Name   Subject   Marks
-    
            Jhon    Maths     50
     }
 
