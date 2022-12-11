@@ -24,12 +24,9 @@ otherwise, it will create a new student record.
 
 * For example, You have a current record in the database
 
-    
-    { 
            
            Name   Subject   Marks
            Jhon    Maths     75
-    }
 
 
 * If we add the same data again
@@ -37,7 +34,6 @@ otherwise, it will create a new student record.
            
            Name   Subject   Marks
            Jhon    Maths     50
-
 
 
 * Then the total should be 125
