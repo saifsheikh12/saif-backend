@@ -20,6 +20,10 @@ const studentSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     teacherId: {
         type: ObjectId,
         required: true,
@@ -27,3 +31,7 @@ const studentSchema = new mongoose.Schema({
     }
 
 }, { timestamps: true })
+
+
+
+module.exports = mongoose.model('student', studentSchema)

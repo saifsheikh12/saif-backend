@@ -39,6 +39,9 @@ const createTeachers = async function (req, res) {
         if (!password) return res.status(400).send({ status: false, message: 'please provide password'})
         if (!passwordRegex.test(password)) return res.status(400).send({ status: false, message: 'please provide valid password'})
 
+        const newpass = await bcrypt.hash(password, 10)
+        data["password"] = newpass
+
         const teacherData = await teacherModel.create(data)
         res.status(201).send({ status: true, message: 'teacher created successfully', data: teacherData })
     }
@@ -65,10 +68,10 @@ const teacherLogin = async function (req, res) {
         if (!password) return res.status(400).send({ status: false, message: 'password is required'})
 
         let teacher = await teacherModel.findOne({ email })
-        if (!teacher) return res.status(400).send({ status: false, message: "email doesn't exist"})
+        if (!teacher) return res.status(400).send({ status: false, message: "email or password is incorrect"})
 
         let hashedPassword = await bcrypt.compare(password, teacher.password)
-        if (!hashedPassword) return res.status(400).send({ status: false, message: "password doesn't match"})
+        if (!hashedPassword) return res.status(400).send({ status: false, message: "email or password is incorrect"})
 
         let token = jwt.sign({
             teacherId: teacher._id,
@@ -86,4 +89,4 @@ const teacherLogin = async function (req, res) {
 
 
 
-module.exports = { createTeachers, teacherLogin, nameRegex }
+module.exports = { createTeachers, teacherLogin }

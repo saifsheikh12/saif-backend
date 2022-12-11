@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const {createTeachers, teacherLogin} = require('../Controllers/teacherController')
-const {createStudents} = require('../Controllers/studentController')
+const {createStudents, getStudent} = require('../Controllers/studentController')
 
 
 router.get('/test-me', function(req,res){
@@ -14,7 +14,7 @@ router.post('/login', teacherLogin)
 
 
 router.post('/students', createStudents)
-router.get('/students', getStudent)
+router.get('/students/:studentId', getStudent)
 
 
 module.exports = router
