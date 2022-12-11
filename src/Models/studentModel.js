@@ -20,6 +20,7 @@ const studentSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    deletedAt : Date,
     isDeleted: {
         type: Boolean,
         default: false
