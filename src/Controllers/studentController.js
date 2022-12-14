@@ -8,21 +8,18 @@ const createStudents = async function (req, res) {
 
     try {
         let data = req.body
-        let { firstName, lastName, subject, marks, teacherId } = data
+        let { name, subject, marks, teacherId } = data
 
         if (Object.keys(data).length === 0) {
             return res.status(400).send({ status: false, message: 'please provide some data' })
         }
-        if (!firstName) return res.status(400).send({ status: false, message: "Please Provide firstName" })
-        if (!nameRegex.test(firstName)) return res.status(400).send({ status: false, message: "Please Provide Valid firstName" })
-
-        if (!lastName) return res.status(400).send({ status: false, message: "Please Provide lastName" })
-        if (!nameRegex.test(lastName)) return res.status(400).send({ status: false, message: "Please Provide Valid lastName" })
+        if (!name) return res.status(400).send({ status: false, message: "Please Provide name" })
+        if (!nameRegex.test(name)) return res.status(400).send({ status: false, message: "Please Provide Valid name" })
 
         if (!subject) return res.status(400).send({ status: false, message: "Please Provide subject" })
 
         if (!marks) return res.status(400).send({ status: false, message: "Please Provide marks" })
-        if(typeof marks != 'number') return res.status(400).send({status : false, message : 'please provide valid marks'})
+        if (typeof marks != 'number') return res.status(400).send({ status: false, message: 'please provide valid marks' })
 
         if (!teacherId) return res.status(400).send({ status: false, message: 'please provide teacherId' })
 
@@ -34,9 +31,9 @@ const createStudents = async function (req, res) {
         if (!teacher) {
             return res.status(404).send({ status: false, message: "teacher doesn't exist" })
         }
-        const findStudent = await studentModel.findOne({ firstName: firstName, lastName: lastName, subject: subject, teacherId: teacherId })
+        const findStudent = await studentModel.findOne({ name: name, subject: subject, teacherId: teacherId })
         if (findStudent) {
-            const updateStudent = await studentModel.findOneAndUpdate({ firstName: firstName, lastName: lastName, subject: subject, teacherId: teacherId },
+            const updateStudent = await studentModel.findOneAndUpdate({ name: name, subject: subject, teacherId: teacherId },
                 { $inc: { marks: +marks } }, { new: true })
             return res.status(200).send({ status: true, message: "marks updated successfully ", data: updateStudent })
         }
@@ -56,20 +53,22 @@ const createStudents = async function (req, res) {
 const getStudent = async function (req, res) {
 
     try {
-        let studentId = req.params.studentId
+        let data = req.query
+        let teacherId = req.params.teacherId
+        let { name, subject } = data
+        let queryFilter = { teacherId: teacherId, isDeleted: false }
 
-        if (!mongoose.isValidObjectId(studentId)) return res.status(400).send({ satus: false, message: "studentId is not valid" })
+        if (name) queryFilter.name = name
+        if (subject) queryFilter.subject = subject
 
-        let allstudent = await studentModel.findById(studentId)
-        if (!allstudent) return res.status(404).send({ satus: false, message: "studentId does not Exist" })
+        let findStudent = await studentModel.find(queryFilter)
+        if (findStudent.length === 0) return res.status(400).send({ status: false, message: 'no student found' })
 
-        let result = await studentModel.findOne({ _id: studentId, isDeleted: false })
-        if (!result) return res.status(404).send({ status: false, message: "student Not Found Or Deleted" })
+        return res.status(200).send({ status: true, message: "students fetched successfully", data: findStudent })
 
-        return res.status(200).send({ status: true, message: "data fetched successfully", data: allstudent })
-    }
-    catch (error) {
-        res.status(500).send({ status: false, Error: error.message })
+    } catch (error) {
+        return res.status(500).send({ status: false, message: err.message })
+
     }
 }
 
@@ -80,27 +79,29 @@ const updateStudent = async function (req, res) {
 
     try {
         const data = req.body
+        let teacherId = req.params.teacherId
         let studentId = req.params.studentId
 
-        const { firstName, lastName, subject, marks } = data
+        const { name, subject, marks } = data
         let obj = {}
 
-        if (firstName) obj.firstName = firstName
-        if (lastName) obj.lastName = lastName
+        if (name) obj.name = name
         if (subject) obj.subject = subject
         if (marks) obj.marks = marks
 
-        if (!mongoose.isValidObjectId(studentId)) return res.status(400).send({ status: false, message: "please provide valid studentId" })
-        if (Object.keys(data).length == 0) return res.status(400).send({ satus: false, message: "for updation data is required" })
+        if (!(name || subject || marks)) {
+            return res.status(400).send({ satus: false, message: "Please Provide Only name,subject,marks" })
+        }
 
-        let student = await studentModel.findById(studentId)
+        if (!mongoose.isValidObjectId(studentId)) return res.status(400).send({ status: false, message: "please provide valid studentId" })
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "for updation data is required" })
+
+        let student = await studentModel.findOne({ _id: studentId, teacherId: teacherId })
         if (!student) return res.status(404).send({ status: false, message: "student does not found" })
 
-        if (!nameRegex.test(firstName)) return res.status(400).send({ status: false, message: "Please Provide Valid firstName" })
+        if (!nameRegex.test(name)) return res.status(400).send({ status: false, message: "Please Provide Valid name" })
 
-        if (!nameRegex.test(lastName)) return res.status(400).send({ status: false, message: "Please Provide Valid lastName" })
-
-        const updateStudent = await studentModel.findOneAndUpdate({ _id: studentId }, { $set: obj }, { new: true })
+        const updateStudent = await studentModel.findOneAndUpdate({ _id: studentId}, { $set: obj }, { new: true })
 
         return res.status(200).send({ status: true, message: "Student update is successful", data: updateStudent })
 

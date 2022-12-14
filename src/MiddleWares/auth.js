@@ -11,6 +11,8 @@ const authentication = async function (req, res, next) {
             return res.status(401).send({ status: false, message: 'please provide token' })
         }
         
+        let bearerToken = token.split(' ')[1]
+        
         jwt.verify(bearerToken, 'my assignment for TAILWEBS', function (error, decodedToken) {
             if (error) {
                 return res.status(401).send({ status: false, message: 'please provide valid token' })
